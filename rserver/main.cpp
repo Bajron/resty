@@ -2,6 +2,8 @@
 #include <QCoreApplication>
 
 #include <qhttpserver.hpp>
+#include <qhttpserverresponse.hpp>
+#include <qhttpserverrequest.hpp>
 
 #include <resty/mux/Router.h>
 
@@ -10,6 +12,10 @@ int main(int argc, char** argv) {
 
   qhttp::server::QHttpServer server(&app);
   resty::mux::Router router;
+
+  router.handle("/test", [](resty::mux::Request*, resty::mux::Response* resp) {
+    resp->end("Hello world!");
+  });
 
   server.listen(QHostAddress::Any, 8080, router);
 
