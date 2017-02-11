@@ -2,10 +2,15 @@
 #include <qhttpfwd.hpp>
 
 namespace resty {
+namespace mux {
 
-class Mux {
+class Router {
 public:
+  
+
   void operator()(qhttp::server::QHttpRequest* request, qhttp::server::QHttpResponse* response);
 };
 
 }
+}
+

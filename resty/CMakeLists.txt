@@ -11,11 +11,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 add_library(${n}
-  Mux.cpp 
+  Router.cpp 
 )
 
 set(public_headers
-  Mux.h
+  Router.h
 )
 
 target_include_directories(${n} PUBLIC .)
