@@ -1,5 +1,7 @@
 
 #include "Router.h"
+#include "Route.h"
+#include "RouteMatch.h"
 
 #include <QUrl>
 #include <QVariant>
@@ -11,13 +13,6 @@
 
 namespace resty {
 namespace mux {
-
-bool Route::match(const Request* request) const {
-  const QUrl& url = request->url();
-
-  return path == url.path(); 
-}
-
 
 Router::Router() {
   notFoundHandler = [](Request* request, Response* response) {
@@ -50,8 +45,8 @@ void Router::operator()(Request* request, Response* response) {
   notFoundHandler(request, response);
 }
 
-void Router::handle(const std::string& path, Handler handler) {
-  auto route = std::make_shared<Route>(QString::fromStdString(path), handler);
+void Router::handle(QString path, Handler handler) {
+  auto route = std::make_shared<Route>(path, handler);
   routes.insert(route); 
 }
 

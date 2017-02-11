@@ -12,10 +12,13 @@ set(CMAKE_AUTOMOC ON)
 
 add_library(${n}
   mux/Router.cpp 
+  mux/Route.cpp 
 )
 
 set(public_headers
   mux/Router.h
+  mux/Route.h
+  mux/RouteMatch.h
 )
 
 target_include_directories(${n} PUBLIC ..)
