@@ -1,3 +1,4 @@
 3rdparty/http-parser
 3rdparty/qhttp
 build
+*.swp
