@@ -5,6 +5,8 @@
 
 #include <QString>
 
+#include <memory>
+
 namespace resty {
 namespace mux {
 
@@ -14,7 +16,7 @@ struct Route {
   QString path;
   Handler handler;
 
-  bool match(const Request* request) const;
+  std::unique_ptr<RouteMatch> match(const Request* request) const;
 };
 
 }

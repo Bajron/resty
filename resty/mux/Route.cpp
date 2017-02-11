@@ -1,4 +1,5 @@
 #include "Route.h"
+#include "RouteMatch.h"
 
 #include <QUrl>
 
@@ -8,10 +9,15 @@
 namespace resty {
 namespace mux {
 
-bool Route::match(const Request* request) const {
+std::unique_ptr<RouteMatch> Route::match(const Request* request) const {
   const QUrl& url = request->url();
 
-  return path == url.path(); 
+  if (path == url.path()) {
+    std::unique_ptr<RouteMatch> m(new RouteMatch{this, handler});
+    return std::move(m);
+  } else {
+    return nullptr;
+  }
 }
 
 }

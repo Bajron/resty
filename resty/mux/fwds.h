@@ -16,6 +16,7 @@ using Response = qhttp::server::QHttpResponse;
 using Vars = std::unordered_map<std::string, std::string>;
 
 class Route;
+class RouteMatch;
 
 }
 }

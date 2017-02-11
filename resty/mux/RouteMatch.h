@@ -9,7 +9,7 @@ namespace resty {
 namespace mux {
 
 struct RouteMatch {
-  Route* route;
+  const Route* route;
   Handler handler;
   Vars vars;
 };
