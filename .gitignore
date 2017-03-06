@@ -1,4 +1,5 @@
 3rdparty/http-parser
 3rdparty/qhttp
+3rdparty/googletest
 build
 *.swp

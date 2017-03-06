@@ -30,4 +30,11 @@ qt5_use_modules(${n} Core Network)
 set_target_properties(${n} PROPERTIES PUBLIC_HEADER ${public_headers})
 
 
+add_executable(test_${n}
+  RegExBuilder_test.cpp
+)
+
+target_link_libraries(test_${n} ${n} gmock gtest_main)
+
+add_test(${n} test_${n})
 
