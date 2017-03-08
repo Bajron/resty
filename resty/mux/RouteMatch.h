@@ -4,14 +4,19 @@
 #include "fwds.h"
 
 #include <QMetaType>
+#include <QString>
 
 namespace resty {
 namespace mux {
 
 struct RouteMatch {
-  const Route* route;
-  Handler handler;
+  const Route* route = nullptr;
+  Handler handler = nullptr;
   Vars vars;
+  
+  static constexpr const char* PROPERTY_NAME = "routeMatch";
+
+  static RouteMatch getFromRequest(Request* request);
 };
 
 }

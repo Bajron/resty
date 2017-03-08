@@ -12,9 +12,15 @@ namespace mux {
 std::unique_ptr<RouteMatch> Route::match(const Request* request) const {
   const QUrl& url = request->url();
 
-  if (path == url.path()) {
-    std::unique_ptr<RouteMatch> m(new RouteMatch{this, handler});
-    return std::move(m);
+  auto hit = regularExpression.match(url.path());
+  if (hit.hasMatch()) {
+    std::unique_ptr<RouteMatch> routeMatch(new RouteMatch{this, handler});
+    for (const auto& groupName : regularExpression.namedCaptureGroups()) {
+      if (groupName.isEmpty())
+        continue;
+      routeMatch->vars[groupName] = hit.captured(groupName);
+    }
+    return std::move(routeMatch);
   } else {
     return nullptr;
   }

@@ -3,3 +3,4 @@
 3rdparty/googletest
 build
 *.swp
+*.kdev*

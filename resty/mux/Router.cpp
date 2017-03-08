@@ -35,8 +35,8 @@ Router::Router() {
 
 void Router::operator()(Request* request, Response* response) {
   for (const auto& route : routes) {
-    if (auto m = route->match(request)) {
-      request->setProperty("routeMatch", QVariant::fromValue(*(m.release())));
+    if (auto routeMatch = route->match(request)) {
+      request->setProperty(RouteMatch::PROPERTY_NAME, QVariant::fromValue(*(routeMatch.release())));
       route->handler(request, response);
       return;
     }

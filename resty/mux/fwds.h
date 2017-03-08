@@ -3,7 +3,8 @@
 
 #include <qhttpfwd.hpp>
 
-#include <unordered_map>
+#include <QHash>
+#include <QString>
 
 namespace resty {
 namespace mux {
@@ -13,7 +14,7 @@ using Handler = qhttp::server::TServerHandler;
 using Request = qhttp::server::QHttpRequest;
 using Response = qhttp::server::QHttpResponse;
 
-using Vars = std::unordered_map<std::string, std::string>;
+using Vars = QHash<QString, QString>;
 
 class Route;
 class RouteMatch;

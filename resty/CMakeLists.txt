@@ -11,8 +11,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 add_library(${n}
-  mux/Router.cpp 
-  mux/Route.cpp 
+  mux/Router.cpp
+  mux/Route.cpp
+  mux/RouteMatch.cpp
 )
 
 set(public_headers

@@ -10,7 +10,7 @@ namespace resty {
 class RegExBuilder {
 public:
   // changes "{name:regex}/{name2}" to regex with named groups
-  QRegularExpression fromPattern(QString pattern) {
+  static QRegularExpression fromPattern(QString pattern) {
     QRegularExpression bracePair(R"(\{([^}:]+)(:([^}]+))?\})");
     
     QHash<QString, QString> replacements;

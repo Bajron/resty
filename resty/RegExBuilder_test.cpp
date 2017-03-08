@@ -16,10 +16,6 @@ protected:
   }
 };
 
-TEST_F(RegExBuilderShould, Compile) {
-  
-}
-
 TEST_F(RegExBuilderShould, LeaveSimpleTextAsIs) {
   expectPattern("/simple/link", "/simple/link");
 }
