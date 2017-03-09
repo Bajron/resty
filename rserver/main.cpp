@@ -1,5 +1,6 @@
 
 #include <QCoreApplication>
+#include <QTextStream>
 
 #include <qhttpserver.hpp>
 #include <qhttpserverresponse.hpp>
@@ -20,8 +21,22 @@ int main(int argc, char** argv) {
   qhttp::server::QHttpServer server(&app);
   resty::mux::Router router;
 
+  //router.setPrefix("/prefix");
+
   router.handle("/test", [](resty::mux::Request*, resty::mux::Response* resp) {
     resp->end("Hello world!");
+  });
+
+  router.handle("/about", [](resty::mux::Request* req, resty::mux::Response* resp) {
+    QByteArray data;
+    QTextStream ss(&data);
+    ss << req->httpVersion().toUtf8() << '\n';
+    ss << req->methodString() << '\n';
+    ss << req->url().url().toUtf8() << '\n';
+    ss << req->remoteAddress().toUtf8() << '\n';
+    ss << req->remotePort() << endl;
+  
+    resp->end(data);
   });
 
   router.handle("/hello/{name}", [](resty::mux::Request* req, resty::mux::Response* resp) {

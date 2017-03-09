@@ -7,6 +7,7 @@
 #include <QUrl>
 #include <QVariant>
 #include <QByteArray>
+#include <QString>
 
 #include <qhttpfwd.hpp>
 #include <qhttpserverrequest.hpp>
@@ -53,14 +54,16 @@ void Router::operator()(Request* request, Response* response) {
 }
 
 std::unique_ptr<RouteMatch> Router::match(const Request* request, const RouteMatch& partial) const {
+  std::unique_ptr<RouteMatch> context(new RouteMatch(partial));
+
   for (const auto& check : matchers) {
-    auto routeMatch = check(request, partial);
-    if (!routeMatch)
+    context = std::move(check(request, *context));
+    if (!context)
       return nullptr;
   }
 
   for (const auto& route : routes) {
-    if (auto routeMatch = route->match(request, partial)) {
+    if (auto routeMatch = route->match(request, *context)) {
       return routeMatch;
     }
   }
@@ -69,6 +72,37 @@ std::unique_ptr<RouteMatch> Router::match(const Request* request, const RouteMat
 
 void Router::addCheck(const MatchFunction& matcher){
   matchers.push_back(matcher);
+}
+
+struct PrefixChecker {
+  PrefixChecker(QString prefix):
+    re(RegExBuilder::fromPattern("^" + prefix)) {
+  }
+
+  std::unique_ptr<RouteMatch> operator()(const Request* request, const RouteMatch& partial) const {
+    const QUrl& url = request->url();
+
+    int offset = partial.pathPrefix;
+    auto hit = re.match(url.path(), offset);
+    if (hit.hasMatch()) {
+      std::unique_ptr<RouteMatch> routeMatch(new RouteMatch{nullptr, nullptr, partial.pathPrefix + hit.capturedEnd(), partial.vars});
+      for (const auto& groupName : re.namedCaptureGroups()) {
+        if (groupName.isEmpty())
+          continue;
+        routeMatch->vars[groupName] = hit.captured(groupName);
+      }
+      return std::move(routeMatch);
+    } else {
+      return nullptr;
+    }
+  }
+
+  QRegularExpression re;
+};
+
+void Router::setPrefix(QString prefix) {
+  static PrefixChecker checker(prefix);
+  addCheck(std::ref(checker));
 }
 
 }

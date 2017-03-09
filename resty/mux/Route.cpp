@@ -13,7 +13,8 @@ std::unique_ptr<RouteMatch> Route::match(const Request* request, const RouteMatc
   const QUrl& url = request->url();
 
   int offset = partial.pathPrefix;
-  auto hit = regularExpression.match(url.path(), offset);
+  auto hit = regularExpression.match(url.path().mid(offset));
+
   if (hit.hasMatch()) {
     std::unique_ptr<RouteMatch> routeMatch(new RouteMatch{this, handler, partial.pathPrefix, partial.vars});
     for (const auto& groupName : regularExpression.namedCaptureGroups()) {
