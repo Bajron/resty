@@ -8,8 +8,14 @@
 #include <resty/mux/Router.h>
 #include <resty/mux/RouteMatch.h>
 
+#include <iostream>
+
 int main(int argc, char** argv) {
   QCoreApplication app(argc, argv);
+
+  std::clog << "RouteMatch: " << sizeof(resty::mux::RouteMatch) << std::endl;
+  std::clog << "Handler: " << sizeof(resty::mux::Handler) << std::endl;
+  std::clog << "Vars: " << sizeof(resty::mux::Vars) << std::endl;
 
   qhttp::server::QHttpServer server(&app);
   resty::mux::Router router;
@@ -24,7 +30,7 @@ int main(int argc, char** argv) {
     resp->end(message.toUtf8());
   });
   
-  server.listen(QHostAddress::Any, 8080, router);
+  server.listen(QHostAddress::Any, 8080, std::ref(router));
 
   if (!server.isListening()) {
     qDebug("failed to listen");

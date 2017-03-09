@@ -15,14 +15,13 @@ namespace mux {
 struct Route {
   Route(QString path, Handler handler) :
     regularExpression(RegExBuilder::fromPattern("^" + path + "$")),
-    handler(handler) {
-      
-    }
+    handler(handler) {}
 
   QRegularExpression regularExpression;
+
   Handler handler;
 
-  std::unique_ptr<RouteMatch> match(const Request* request) const;
+  std::unique_ptr<RouteMatch> match(const Request* request, const RouteMatch& partial) const;
 };
 
 }

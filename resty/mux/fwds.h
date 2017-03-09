@@ -6,13 +6,15 @@
 #include <QHash>
 #include <QString>
 
+#include <memory>
+
 namespace resty {
 namespace mux {
 
-using Handler = qhttp::server::TServerHandler;
+using Handler = ::qhttp::server::TServerHandler;
 
-using Request = qhttp::server::QHttpRequest;
-using Response = qhttp::server::QHttpResponse;
+using Request = ::qhttp::server::QHttpRequest;
+using Response = ::qhttp::server::QHttpResponse;
 
 using Vars = QHash<QString, QString>;
 
