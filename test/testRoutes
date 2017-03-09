@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SERVER="localhost:8080"
+
+function die() {
+  echo "** Assertion failed: $1"
+  exit 1
+}
+
+function assertGetResponseEqual() {
+  local response=$(curl -s "${SERVER}${1}")
+  [[ "$response" == "$2" ]] || die "$1: $response != $2"
+}
+
+NOT_HANDLED='Requested resource is not found.'
+
+assertGetResponseEqual '/nope' "$NOT_HANDLED"
+assertGetResponseEqual '/test' 'Hello world!'
+assertGetResponseEqual '/hello/teststring' 'Hello teststring!'
+assertGetResponseEqual '/hello/teststring/strict' "$NOT_HANDLED"
+
+echo "OK"
+
