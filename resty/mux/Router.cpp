@@ -101,9 +101,9 @@ struct PrefixChecker {
     const QUrl& url = request->url();
 
     int offset = partial.pathPrefix;
-    auto hit = re.match(url.path(), offset);
+    auto hit = re.match(url.path().mid(offset));
     if (hit.hasMatch()) {
-      std::unique_ptr<RouteMatch> routeMatch(new RouteMatch{nullptr, nullptr, partial.pathPrefix + hit.capturedEnd(), partial.vars});
+      std::unique_ptr<RouteMatch> routeMatch(new RouteMatch{nullptr, nullptr, offset + hit.capturedEnd(), partial.vars});
       for (const auto& groupName : re.namedCaptureGroups()) {
         if (groupName.isEmpty())
           continue;
