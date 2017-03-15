@@ -61,12 +61,20 @@ void Router::addSubRouter(std::shared_ptr<Router> router) {
 }
 
 void Router::operator()(Request* request, Response* response) {
-  if (auto routeMatch = match(request, RouteMatch())) {
-    const auto& matchedHandler = routeMatch->handler;
-    request->setProperty(RouteMatch::PROPERTY_NAME, QVariant::fromValue(*(routeMatch.release())));
-    return matchedHandler(request, response);
+  try {
+    if (auto routeMatch = match(request, RouteMatch())) {
+      const auto& matchedHandler = routeMatch->handler;
+      request->setProperty(RouteMatch::PROPERTY_NAME, QVariant::fromValue(*(routeMatch.release())));
+      return matchedHandler(request, response);
+    }
+    notFoundHandler(request, response);
+  } catch (const std::exception& exception) {
+    response->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+    response->end(exception.what());
+  } catch (...) {
+    response->setStatusCode(qhttp::ESTATUS_INTERNAL_SERVER_ERROR);
+    response->end("Unexpected error");
   }
-  notFoundHandler(request, response);
 }
 
 std::unique_ptr<RouteMatch> Router::match(const Request* request, const RouteMatch& partial) const {
