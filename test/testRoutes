@@ -18,6 +18,8 @@ assertGetResponseEqual '/nope' "$NOT_HANDLED"
 assertGetResponseEqual '/test' 'Hello world!'
 assertGetResponseEqual '/hello/teststring' 'Hello teststring!'
 assertGetResponseEqual '/hello/teststring/strict' "$NOT_HANDLED"
+assertGetResponseEqual '/v1/foo' 'version: v1 test: '
+assertGetResponseEqual '/v2/foo' 'version:  test: '
 
 echo "OK"
 

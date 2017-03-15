@@ -17,10 +17,12 @@
 namespace resty {
 namespace mux {
 
+class PrefixChecker;
 
 class Router {
 public:
   Router();
+  ~Router();
 
   typedef std::function<std::unique_ptr<RouteMatch>(const Request* request, const RouteMatch& partial)> MatchFunction;
 
@@ -29,7 +31,10 @@ public:
 
   void addCheck(const MatchFunction& matcher);
 
-  void handle(QString path, Handler handler); 
+  void addResourceHandler(QString path, Handler handler); 
+
+  void addSubRouter(std::shared_ptr<Router> router);
+
 
   void setPrefix(QString prefix);
 
@@ -46,7 +51,9 @@ public:
 private:
   Handler notFoundHandler;
 
+  std::unique_ptr<PrefixChecker> prefixChecker;
   std::vector<MatchFunction> matchers;
+  std::vector<std::shared_ptr<Router>> subRouters;
   std::vector<std::shared_ptr<Route>> routes;
 };
 

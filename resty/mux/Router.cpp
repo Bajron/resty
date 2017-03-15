@@ -39,9 +39,25 @@ Router::Router() {
   handler = std::ref(*this);
 }
 
-void Router::handle(QString path, Handler handler) {
+void Router::setNotFoundHandler(Handler handler) {
+  notFoundHandler = handler;
+}
+
+Router::~Router() {
+
+}
+
+void Router::addResourceHandler(QString path, Handler handler) {
   auto route = std::make_shared<Route>(path, handler);
   routes.emplace_back(std::move(route));
+}
+
+void Router::addCheck(const MatchFunction& matcher){
+  matchers.push_back(matcher);
+}
+
+void Router::addSubRouter(std::shared_ptr<Router> router) {
+  subRouters.push_back(router);
 }
 
 void Router::operator()(Request* request, Response* response) {
@@ -62,16 +78,18 @@ std::unique_ptr<RouteMatch> Router::match(const Request* request, const RouteMat
       return nullptr;
   }
 
+  for (const auto& subRouter : subRouters) {
+    if (auto routeMatch = subRouter->match(request, *context)) {
+      return routeMatch;
+    }
+  }
+
   for (const auto& route : routes) {
     if (auto routeMatch = route->match(request, *context)) {
       return routeMatch;
     }
   }
   return nullptr;
-}
-
-void Router::addCheck(const MatchFunction& matcher){
-  matchers.push_back(matcher);
 }
 
 struct PrefixChecker {
@@ -100,9 +118,10 @@ struct PrefixChecker {
   QRegularExpression re;
 };
 
+// FIXME: call twice for crash
 void Router::setPrefix(QString prefix) {
-  static PrefixChecker checker(prefix);
-  addCheck(std::ref(checker));
+  prefixChecker.reset(new PrefixChecker(prefix));
+  addCheck(std::ref(*prefixChecker));
 }
 
 }

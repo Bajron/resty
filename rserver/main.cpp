@@ -21,13 +21,11 @@ int main(int argc, char** argv) {
   qhttp::server::QHttpServer server(&app);
   resty::mux::Router router;
 
-  //router.setPrefix("/prefix");
-
-  router.handle("/test", [](resty::mux::Request*, resty::mux::Response* resp) {
+  router.addResourceHandler("/test", [](resty::mux::Request*, resty::mux::Response* resp) {
     resp->end("Hello world!");
   });
 
-  router.handle("/about", [](resty::mux::Request* req, resty::mux::Response* resp) {
+  router.addResourceHandler("/about", [](resty::mux::Request* req, resty::mux::Response* resp) {
     QByteArray data;
     QTextStream ss(&data);
     ss << req->httpVersion().toUtf8() << '\n';
@@ -39,12 +37,30 @@ int main(int argc, char** argv) {
     resp->end(data);
   });
 
-  router.handle("/hello/{name}", [](resty::mux::Request* req, resty::mux::Response* resp) {
+  router.addResourceHandler("/hello/{name}", [](resty::mux::Request* req, resty::mux::Response* resp) {
     auto routeMatch = resty::mux::RouteMatch::getFromRequest(req);
     QString message = "Hello " + routeMatch.vars["name"] + "!";
     resp->end(message.toUtf8());
   });
+
+  auto apiRouter = std::make_shared<resty::mux::Router>();
+  apiRouter->addResourceHandler("/foo", [](resty::mux::Request* req, resty::mux::Response* resp) {
+    auto routeMatch = resty::mux::RouteMatch::getFromRequest(req);
+    QString message = "version: " + routeMatch.vars["version"] + " test: " + routeMatch.vars["test"];
+    resp->end(message.toUtf8());
+  });
+
+  auto v1Router = std::make_shared<resty::mux::Router>();
+  v1Router->setPrefix("/{version:v1}");
+  v1Router->addSubRouter(apiRouter);
+
+  auto v2Router = std::make_shared<resty::mux::Router>();
+  v2Router->setPrefix("/v2");
+  v2Router->addSubRouter(apiRouter);
   
+  router.addSubRouter(v1Router);
+  router.addSubRouter(v2Router);
+
   server.listen(QHostAddress::Any, 8080, std::ref(router));
 
   if (!server.isListening()) {
